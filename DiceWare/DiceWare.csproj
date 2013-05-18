@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DiceWareExt.cs" />
+    <Compile Include="DiceWareOptions.cs" />
     <Compile Include="DiceWarePwGen.cs" />
     <Compile Include="DiceWareOptionsForm.cs">
       <SubType>Form</SubType>

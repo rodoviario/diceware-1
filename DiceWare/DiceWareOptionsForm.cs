@@ -12,30 +12,32 @@ namespace DiceWare
 {
     public partial class DiceWareOptionsForm : Form
     {
-        private string m_CurrentOptions;
+        private DiceWareOptions m_Options = new DiceWareOptions();
 
-        public DiceWareOptionsForm(string strCurrentOptions)
+        public DiceWareOptionsForm()
         {
             InitializeComponent();
 
-            this.m_CurrentOptions = strCurrentOptions;
+        }
 
-            int n;
-            if (int.TryParse(this.m_CurrentOptions, out n))
-            {
-                this.nudWordCount.Value = n;
-            }
+        public DiceWareOptionsForm(string strCurrentOptions)
+            : this()
+        {
+
+            m_Options.Load(strCurrentOptions);
+
+            this.nudWordCount.Value = m_Options.WordCount;
 
         }
 
         internal string GetOptions()
         {
-            return this.m_CurrentOptions;
+            return m_Options.Save();
         }
 
         private void btnOkay_Click(object sender, EventArgs e)
         {
-            m_CurrentOptions = Convert.ToInt32(nudWordCount.Value).ToString();
+            m_Options.WordCount = Convert.ToInt32(this.nudWordCount.Value);
         }
     }
 }
