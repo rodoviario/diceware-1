@@ -10,13 +10,26 @@ namespace DiceWare
 {
     public sealed class DiceWareExt : Plugin
     {
-        private IPluginHost m_host;
+        private IPluginHost m_host = null;
+        private DiceWarePwGen m_gen = null;
 
         public override bool Initialize(IPluginHost host)
         {
             m_host = host;
 
+            m_gen = new DiceWarePwGen();
+
+            host.PwGeneratorPool.Add(m_gen);
+
             return true;
+        }
+
+        public override void Terminate()
+        {
+            if (m_host != null)
+            {
+                m_host.PwGeneratorPool.Remove(m_gen.Uuid);
+            }
         }
 
     }
