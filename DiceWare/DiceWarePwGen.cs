@@ -9,11 +9,14 @@ using KeePassLib.Cryptography;
 using KeePassLib;
 using KeePassLib.Security;
 using KeePassLib.Utility;
+using System.IO;
 
 namespace DiceWare
 {
     class DiceWarePwGen : CustomPwGenerator
     {
+        private Dictionary<int, string> words = new Dictionary<int, string>(7776);
+
         private static readonly PwUuid m_uuid = new PwUuid(
             new byte[] {
                         0x9E, 0x61, 0x1F, 0x76, 
@@ -24,6 +27,19 @@ namespace DiceWare
         public override PwUuid Uuid { get { return m_uuid; } }
         public override string Name { get { return "Diceware"; } }
         public override bool SupportsOptions { get { return true; } }
+
+        public DiceWarePwGen()
+        {
+            using (var stream = new StringReader(DiceWare.Properties.Resources.diceware))
+            {
+                string line = "";
+                while ((line = stream.ReadLine()) != null)
+                {
+                    var word = line.Split('\t');
+                    words.Add(int.Parse(word[0]), word[1].Trim());
+                }
+            }
+        }
 
         public override string GetOptions(string strCurrentOptions)
         {
@@ -41,17 +57,31 @@ namespace DiceWare
         {
 
             Random r = new Random((int)crsRandomSource.GetRandomUInt64());
+            var opt = new DiceWareOptions(prf.CustomAlgorithmOptions);
 
             string result = "";
+            int word = 0;
 
-            for (int i = 0; i < 25; i++)
+            for (int i = 0; i < 5 * opt.WordCount; i++)
             {
-                if (i % 5 == 0) result += " ";
+                word *= 10;
+                word += (1 + r.Next(6));
 
-                result += r.Next(7);
+                if ((i + 1) % 5 == 0 && i > 0)
+                {
+                    result += words[word];
+                    result += " ";
+
+                    word = 0;
+                }
             }
 
-            return new ProtectedString(true, result);
+            return new ProtectedString(true, result.Trim());
+        }
+
+        internal void Terminate()
+        {
+            words = null;
         }
     }
 }

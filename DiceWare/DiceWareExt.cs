@@ -29,6 +29,8 @@ namespace DiceWare
             if (m_host != null)
             {
                 m_host.PwGeneratorPool.Remove(m_gen.Uuid);
+                m_gen.Terminate();
+                m_gen = null;                
             }
         }
 
